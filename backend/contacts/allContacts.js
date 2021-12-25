@@ -1,1 +1,1 @@
-exports.contacts = [{id: 1, name: "Arpi", phone: "099884477"}];
+exports.contacts = [{id: '1', name: "Arpi", phone: "099884477"}];
