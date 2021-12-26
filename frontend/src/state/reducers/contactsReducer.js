@@ -3,6 +3,7 @@ import {
   GET_CONTACTS,
   DELETE_CONTACT,
   ADD_CONTACT,
+  EDIT_CONTACT,
 } from "../actions/contacts";
 
 const initialState = {
@@ -10,8 +11,9 @@ const initialState = {
   contact: {
     name: "",
     phone: "",
-    id: "",
   },
+  edit: false,
+  error: null,
 };
 
 const contactsReducer = (state = initialState, action) => {
@@ -20,34 +22,54 @@ const contactsReducer = (state = initialState, action) => {
       return {
         ...state,
         contacts: action.payload,
-        isLoading: false,
       };
     case GET_CONTACT:
       return {
         ...state,
         contact: action.payload,
+        edit: action.edit,
       };
     case ADD_CONTACT:
       return {
         ...state,
-        contacts: state.contacts.push(action.payload),
+        error: action.error,
+        contact: action.error
+          ? state.contact
+          : {
+              name: "",
+              phone: "",
+            },
+        contacts: action.error
+          ? state.contacts
+          : [...state.contacts, action.payload],
       };
     case DELETE_CONTACT:
       return {
         ...state,
-        contacts: state.contacts.filter(
-          (contact) => contact.id !== action.payload
-        ),
+        error: action.error,
+        contacts: action.error
+          ? state.contacts
+          : state.contacts.filter((contact) => contact.id !== action.payload),
       };
-    case "EDIT_CONTACT":
+    case EDIT_CONTACT:
       return {
         ...state,
-        contacts: contacts.map((contact) => {
-          if (contact.id === action.payload.id) {
-            contact = action.payload;
-          }
-          return contact;
-        }),
+        error: action.error,
+        edit: action.error ? action.edit : false,
+        contact: action.error
+          ? state.contact
+          : {
+              name: "",
+              phone: "",
+            },
+        contacts: action.error
+          ? state.contacts
+          : state.contacts.map((contact) => {
+              if (contact.id === action.payload.id) {
+                contact = action.payload;
+              }
+              return contact;
+            }),
       };
     default:
       return state;

@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { addContact } from "../../../state/actions/contacts";
-import { useSelector } from "react-redux";
-import { selectContact } from "../../../state/selectors/contacts";
+import { addContact, editContact } from "../../../state/actions/contacts";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  selectContact,
+  selectEdit,
+  selectError,
+} from "../../../state/selectors/contacts";
 
 const ContactsForm = () => {
   const [inputs, setInputs] = useState({});
   const contact = useSelector(selectContact) || {};
+  const edit = useSelector(selectEdit);
+  const error = useSelector(selectError);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     setInputs(contact);
@@ -19,11 +26,16 @@ const ContactsForm = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    addContact(inputs);
+    if (!edit) {
+      dispatch(addContact(inputs));
+    } else {
+      dispatch(editContact(inputs));
+    }
   };
   return (
     <>
-      <h3>Form</h3>
+      <h3>{edit ? "Edit contact" : "Add contact"}</h3>
+      {error ? <p className="error">{error}</p> : null}
       <form onSubmit={handleSubmit}>
         <label>
           Name:
